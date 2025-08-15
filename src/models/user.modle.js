@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 
 const userSchema = new Schema(
   {
-    username: {
+    userName: {
       type: String,
       require: true,
       unique: true,
@@ -19,7 +19,7 @@ const userSchema = new Schema(
       lowercase: true,
       trim: true,
     },
-    fullname: {
+    fullName: {
       type: String,
       require: true,
       trim: true,
@@ -29,7 +29,7 @@ const userSchema = new Schema(
       type: String, //cloudinary url
       require: true,
     },
-    converImage: {
+    coverImage: {
       type: String, //cloudinary url
     },
     watchHistory: [
@@ -54,7 +54,8 @@ const userSchema = new Schema(
 //Prehook
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
-  this.password = bcrypt.hash(this.password, 10);
+  this.password = await bcrypt.hash(this.password, 10);
+  next();
 });
 
 //password check
@@ -68,8 +69,8 @@ userSchema.method.generateAccessToken = function () {
     {
       _id: this._id,
       email: this.email,
-      usename: this.usename,
-      fullname: this.fullname,
+      useName: this.useName,
+      fullName: this.fullName,
     },
     process.env.ACCESS_TOKEN_SECRET,
     {
