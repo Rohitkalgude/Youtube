@@ -14,17 +14,16 @@ const uplodedCloudinary = async (localfilepath) => {
     // Upload to Cloudinary with YouTube preset
     const response = await cloudinary.uploader.upload(localfilepath, {
       resource_type: "auto",
-      upload_preset: "Youtube",
+      folder: "Youtube",
     });
 
     console.log("upload clodinary");
     response.url;
     return response;
-  } 
-  catch (error) {
+  } catch (error) {
     fs.unlinkSync(localfilepath);
-    return null
+    return null;
   }
 };
 
-export {uplodedCloudinary}
+export { uplodedCloudinary };
