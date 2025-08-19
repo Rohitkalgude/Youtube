@@ -17,8 +17,8 @@ const uplodedCloudinary = async (localfilepath) => {
       folder: "Youtube",
     });
 
-    console.log("upload clodinary");
-    response.url;
+    console.log("upload clodinary", response.url);
+    fs.unlinkSync(localfilepath);
     return response;
   } catch (error) {
     fs.unlinkSync(localfilepath);
