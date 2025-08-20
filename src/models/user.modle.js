@@ -6,7 +6,7 @@ const userSchema = new Schema(
   {
     userName: {
       type: String,
-      require: true,
+      required: true,
       unique: true,
       lowercase: true,
       trim: true,
@@ -14,20 +14,20 @@ const userSchema = new Schema(
     },
     email: {
       type: String,
-      require: true,
+      required: true,
       unique: true,
       lowercase: true,
       trim: true,
     },
     fullName: {
       type: String,
-      require: true,
+      required: true,
       trim: true,
       index: true,
     },
     avatar: {
       type: String, //cloudinary url
-      require: true,
+      required: true,
     },
     coverImage: {
       type: String, //cloudinary url
@@ -40,7 +40,7 @@ const userSchema = new Schema(
     ],
     password: {
       type: String,
-      require: [true, "Password is required"],
+      required: [true, "Password is required"],
     },
     refreshToken: {
       type: String,
@@ -59,17 +59,17 @@ userSchema.pre("save", async function (next) {
 });
 
 //password check
-userSchema.method.isPasswordCorrect = async function (password) {
+userSchema.methods.isPasswordCorrect = async function (password) {
   return await bcrypt.compare(password, this.password);
 }; 
 
 //genrate REFRESH and ACCESS token
-userSchema.method.generateAccessToken = function () {
+userSchema.methods.generateAccessToken = function () {
   return jwt.sign(
     {
       _id: this._id,
       email: this.email,
-      useName: this.useName,
+      userName: this.userName,
       fullName: this.fullName,
     },
     process.env.ACCESS_TOKEN_SECRET,
@@ -79,7 +79,7 @@ userSchema.method.generateAccessToken = function () {
   );
 };
 
-userSchema.method.generateRefreshToken = function () {
+userSchema.methods.generateRefreshToken = function () {
   return jwt.sign(
     {
       _id: this._id,

@@ -1,14 +1,14 @@
-import { User } from "../models/user.modle";
-import { ApiError } from "../utils/ApiError";
-import { asyncHandler } from "../utils/asyncHandler";
 import jwt from "jsonwebtoken";
+import { User } from "../models/user.modle.js";
+import { ApiError } from "../utils/ApiError.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
 
 export const verfiyJWT = asyncHandler(async (req, _, next) => {
   try {
     const token =
       req.cookies?.accessToken ||
-      req.header("Authorization")?.replace("Bearer", "");
-
+      req.header("Authorization")?.replace("Bearer ", "");
+      
     if (!token) {
       throw new ApiError(401, "Unauthorization request");
     }
