@@ -3,7 +3,7 @@ import { ApiError } from "../utils/ApiError";
 import { asyncHandler } from "../utils/asyncHandler";
 import jwt from "jsonwebtoken";
 
-export const verfiyJWT = asyncHandler(async (req, res, next) => {
+export const verfiyJWT = asyncHandler(async (req, _, next) => {
   try {
     const token =
       req.cookies?.accessToken ||
@@ -26,6 +26,6 @@ export const verfiyJWT = asyncHandler(async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
-    throw new ApiError(401, error?.message || "Invalid Access token")
+    throw new ApiError(401, error?.message || "Invalid Access token");
   }
 });
