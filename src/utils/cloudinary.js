@@ -11,7 +11,6 @@ const uplodedCloudinary = async (localfilepath) => {
   try {
     if (!localfilepath) return null;
 
-    // Upload to Cloudinary with YouTube preset
     const response = await cloudinary.uploader.upload(localfilepath, {
       resource_type: "auto",
       folder: "Youtube",
@@ -26,4 +25,12 @@ const uplodedCloudinary = async (localfilepath) => {
   }
 };
 
-export { uplodedCloudinary };
+const deleteFromclodinary = async (publicId) => {
+  try {
+    await cloudinary.uploader.destroy(publicId);
+  } catch (error) {
+    console.log(error, "Error deleting file from Cloudinary:");
+  }
+};
+
+export { uplodedCloudinary, deleteFromclodinary };
