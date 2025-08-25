@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { User } from "../models/user.modle.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
@@ -6,7 +7,6 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { deleteFromclodinary } from "../utils/cloudinary.js";
 import { getPublicIdFromUrl } from "../utils/cloudinary.js";
 import jwt from "jsonwebtoken";
-import mongoose from "mongoose";
 
 const generateAccessAndRefereshTokens = async (userId) => {
   try {

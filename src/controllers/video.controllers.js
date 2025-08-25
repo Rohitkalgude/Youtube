@@ -1,0 +1,47 @@
+import mongoose from "mongoose";
+import { Video } from "../models/video.modle.js";
+import { User } from "../models/user.modle.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { ApiError } from "../utils/ApiError.js";
+import { uplodedCloudinary } from "../utils/cloudinary.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
+import { deleteFromclodinary } from "../utils/cloudinary.js";
+import { getPublicIdFromUrl } from "../utils/cloudinary.js";
+
+const getAllvideos = asyncHandler(async (req, res) => {
+  const { page = 1, limit = 10, query, sortBy, sortType, userId } = req.query;
+  // get all videos based on query, sort, pagination
+});
+
+const publishAVideo = asyncHandler(async (req, res) => {
+  const { title, description } = req.body;
+  //get video upload to Cloudinary, create video
+});
+
+const getVideoById = asyncHandler(async (req, res) => {
+  const { videoId } = req.params;
+  // get video by Id
+});
+
+const updateVideo = asyncHandler(async (req, res) => {
+  const { videoId } = req.params;
+  // update video details like title,description, thumbnail
+});
+
+const deleteVideo = asyncHandler(async (req, res) => {
+  const { videoId } = req.params;
+  //delete video
+});
+
+const togglePublishStatus = asyncHandler(async (req, res) => {
+  const { videoId } = req.params;
+});
+
+export {
+  getAllvideos,
+  publishAVideo,
+  getVideoById,
+  updateVideo,
+  deleteVideo,
+  togglePublishStatus,
+};
