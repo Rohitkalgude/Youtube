@@ -34,7 +34,7 @@ router.route("/current-user").get(verfiyJWT, getCurrentUser);
 router.route("/update-Account").patch(verfiyJWT, UpdateAccount);
 router.route("/avatar").patch(verfiyJWT, upload.single("avatar"), UpdateUseravatar);
 router.route("/cover-image").patch(verfiyJWT, upload.single("coverImage"), UpdateUsercoverImage);
-router.route("/c/:username").get(verfiyJWT, getUserChannelProfile);
+router.route("/c/:userName").get(verfiyJWT, getUserChannelProfile);
 router.route("/histroy").get(verfiyJWT, getWatchHistroy)
 
 

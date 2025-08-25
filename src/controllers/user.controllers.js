@@ -4,6 +4,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { uplodedCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { deleteFromclodinary } from "../utils/cloudinary.js";
+import { getPublicIdFromUrl } from "../utils/cloudinary.js";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 
@@ -179,19 +180,21 @@ const logoutUser = asyncHandler(async (req, res) => {
 });
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
-  const incomingrefreshToken = req.cookie.refreshToken || req.body.refreshToken;
+  const incomingrefreshToken =
+    req.cookies.refreshToken || req.body.refreshToken;
 
   if (!incomingrefreshToken) {
     throw new ApiError(401, "unauthorized request");
   }
   try {
     const decodeToken = jwt.verify(
-      incomingrefreshToken.process.env.REFRESH_TOKEN_SECRET
+      incomingrefreshToken,
+      process.env.REFRESH_TOKEN_SECRET
     );
 
-    const user = User.findById(decodeToken?._id);
+    const user = await User.findById(decodeToken?._id);
 
-    if (!use) {
+    if (!user) {
       throw new ApiError(401, "invalid refresh token ");
     }
 
@@ -204,17 +207,17 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
       secure: true,
     };
 
-    const { accessToken, newrefreshToken } =
+    const { accessToken, refreshToken: newrefreshToken } =
       await generateAccessAndRefereshTokens(user._id);
 
     return res
       .status(200)
       .cookie("accessToken", accessToken, options)
-      .cookie("refreshToken", accessToken, options)
+      .cookie("refreshToken", newrefreshToken, options)
       .json(
         new ApiResponse(
           200,
-          { accessToken, accessToken: newrefreshToken },
+          { accessToken, refreshToken: newrefreshToken },
           "Access token refreshed sucfuuly"
         )
       );
@@ -352,7 +355,7 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
 
   const channel = await User.aggregate([
     {
-      $match: userName?.toLowerCase(),
+      $match: { userName: userName.toLowerCase() },
     },
     {
       $lookup: {
@@ -429,13 +432,13 @@ const getWatchHistroy = asyncHandler(async (req, res) => {
           {
             $lookup: {
               from: "users",
-              localField: "owers",
-              foreignField: _id,
+              localField: "owner",
+              foreignField: "_id",
               as: "owner",
               pipeline: [
                 {
                   $project: {
-                    fullName: 1,
+                    fullName: 1,  
                     userName: 1,
                     avatar: 1,
                   },

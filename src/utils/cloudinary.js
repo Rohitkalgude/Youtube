@@ -14,6 +14,7 @@ const uplodedCloudinary = async (localfilepath) => {
     const response = await cloudinary.uploader.upload(localfilepath, {
       resource_type: "auto",
       folder: "Youtube",
+      timeout: 600000,
     });
 
     console.log("upload clodinary", response.url);
@@ -33,4 +34,17 @@ const deleteFromclodinary = async (publicId) => {
   }
 };
 
-export { uplodedCloudinary, deleteFromclodinary };
+const getPublicIdFromUrl = (url) => {
+  try {
+    const parts = url.split("/");
+    const fileNameWithExt = parts[parts.length - 1];
+    const folderName = parts[parts.length - 2];
+
+    return `${folderName}/${fileNameWithExt.split(".")[0]}`;
+  } catch (error) {
+    console.error("Error extracting publicId:", error);
+    return null;
+  }
+};
+
+export { uplodedCloudinary, deleteFromclodinary, getPublicIdFromUrl };
