@@ -11,6 +11,7 @@ import {
 } from "../controllers/video.controllers.js";
 
 const router = Router();
+router.use(verfiyJWT);
 
 router
   .route("/")
@@ -36,4 +37,5 @@ router
   .patch(upload.single("thumbnail"), updateVideo);
 
 router.route("/toggle/publish/:videoId").patch(togglePublishStatus);
+
 export default router;
