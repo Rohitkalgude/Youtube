@@ -14,7 +14,7 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
 
   const userId = req.user?._id;
   if (!userId) {
-    throw new ApiError(400, "userId is required");
+    throw new ApiError(401, "please login first");
   }
 
   const existLikedVideo = await Like.findOne({
@@ -22,7 +22,7 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
     likeBy: userId,
   });
 
-  if (!existLikedVideo) {
+  if (existLikedVideo) {
     await Like.findByIdAndDelete(existLikedVideo._id);
     return res
       .status(200)
@@ -38,7 +38,7 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
     }
     return res
       .status(200)
-      .json(new ApiResponse(), (200, like, "video like successfully"));
+      .json(new ApiResponse(200, like, "video like successfully"));
   }
 });
 
@@ -53,7 +53,7 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
   const userId = req.user?._id;
 
   if (!userId) {
-    throw new ApiError(404, "userId not found");
+    throw new ApiError(401, "Please login first");
   }
 
   const existedCommentLike = await Like.findOne({
@@ -90,7 +90,7 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
   const userId = req.user?._id;
 
   if (!userId) {
-    throw new ApiError(400, "userId is required");
+    throw new ApiError(401, "Please login first");
   }
 
   const existedTweetLike = await Like.findOne({
@@ -120,8 +120,29 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
 });
 
 const getLikedVideos = asyncHandler(async (req, res) => {
-  const { commentId } = req.params;
   //get All like video
+
+  const userId = req.user?._id;
+
+  if (!userId) {
+    throw new ApiError(401, "Unauthorized");
+  }
+
+  const likesVideoDoc = await Like.find({
+    likeBy: userId,
+    video: {
+      $exists: true,
+      $ne: null,
+    },
+  }).populate("video");
+
+  const likesVideo = likesVideoDoc.map((like) => like.video).filter(Boolean);
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, likesVideo, "Liked videos fetched successfully")
+    );
 });
 
 export { toggleVideoLike, toggleCommentLike, toggleTweetLike, getLikedVideos };
