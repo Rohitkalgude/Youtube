@@ -4,11 +4,11 @@ const SubscriptionSchema = new mongoose(
   {
     subscriber: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: "User", // who subscribes
     },
     channel: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: "User", // who channel
     },
   },
   {
