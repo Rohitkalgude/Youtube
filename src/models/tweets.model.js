@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import { User } from "./user.modle";
+import { User } from "./user.modle.js";
 
 const tweetSchema = new Schema(
   {
