@@ -1,6 +1,6 @@
 import mongoose, { isValidObjectId } from "mongoose";
-import { Playlist } from "../models/playlist.model.js";
-import { User } from "../models/user.modle.js";
+import { PlayList } from "../models/playlist.model.js";
+import { User } from "../models/user.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -19,7 +19,7 @@ const createPlaylist = asyncHandler(async (req, res) => {
     throw new ApiError(401, "user not found");
   }
 
-  const createBy = await Playlist.create({
+  const createBy = await PlayList.create({
     name: name,
     description: description,
     owner: userId,
@@ -47,7 +47,7 @@ const getUserPlaylist = asyncHandler(async (req, res) => {
     throw new ApiError(403, "Access denied");
   }
 
-  const palyLists = await Playlist.find({
+  const palyLists = await PlayList.find({
     owner: userId,
   }).populate("video");
 
@@ -68,7 +68,7 @@ const getPlaylistById = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid id format");
   }
 
-  const palyList = await Playlist.findById(playlistId).populate("videos");
+  const palyList = await PlayList.findById(playlistId).populate("videos");
 
   if (!palyList) {
     throw new ApiError(404, "playlist not found");
@@ -91,7 +91,7 @@ const addVideoToPlaylist = asyncHandler(async (req, res) => {
     throw new ApiError(400, "invalid id format");
   }
 
-  const playList = await Playlist.findById(playlistId);
+  const playList = await PlayList.findById(playlistId);
   if (!playList) {
     throw new ApiError(400, "playlistId is missing");
   }
@@ -173,7 +173,7 @@ const deletePlaylist = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid id format");
   }
 
-  const playList = await Playlist.findById(playlistId);
+  const playList = await PlayList.findById(playlistId);
   if (!playList) {
     throw new ApiError(400, "playlist is missing");
   }
@@ -203,7 +203,7 @@ const updatePlaylist = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid id format");
   }
 
-  const palyList = await Playlist.findById(playlistId);
+  const palyList = await PlayList.findById(playlistId);
 
   if (!palyList) {
     throw new ApiError(404, "Playlist is not found");

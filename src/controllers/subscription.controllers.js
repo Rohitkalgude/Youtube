@@ -1,11 +1,10 @@
 import mongoose, { isValidObjectId, Types } from "mongoose";
-import { User } from "../models/user.model.js";
-import { Subscription } from "../models/subscription.model.js";
+import { Subscription } from "../models/subscripition.modle.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
-// TODO: toggle subscription like user subscriber or Unsubscriber 
+// TODO: toggle subscription like user subscriber or Unsubscriber
 const toggleSubscription = asyncHandler(async (req, res) => {
   // validate channelId
   // check if user is logged in

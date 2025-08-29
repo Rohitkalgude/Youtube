@@ -3,11 +3,11 @@ import {
   toggleSubscription,
   getUserChannelSubscribers,
   getSubscribedChannels,
-} from "../controllers/subscription.controller.js";
-import { verifyJWT } from "../middlewares/auth.middleware.js";
+} from "../controllers/subscription.controllers.js";
+import { verfiyJWT } from "../middlewares/auth.middleware.js";
 
 const router = Router();
-router.use(verifyJWT);
+router.use(verfiyJWT);
 
 router
   .route("/c/:channelId")

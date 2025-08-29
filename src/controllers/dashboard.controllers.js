@@ -1,6 +1,6 @@
 import mongoose, { isValidObjectId } from "mongoose";
-import { Video } from "../models/video.model.js";
-import { Subscription } from "../models/subscription.model.js";
+import { Video } from "../models/video.modle.js";
+import { Subscription } from "../models/subscripition.modle.js";
 import { Like } from "../models/like.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";

@@ -1,5 +1,4 @@
 import { Tweet } from "../models/tweets.model.js";
-import { User } from "../models/user.modle.js";
 import mongoose, { isValidObjectId } from "mongoose";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
