@@ -20,12 +20,11 @@ const getAllvideos = asyncHandler(async (req, res) => {
     userId,
   } = req.query;
 
-  if (!userId?.trim()) {
+  if (!userId?.trim() || !isValidObjectId(userId)) {
     throw new ApiError(400, "userId invalid");
   }
 
   const existedUser = await User.findById(userId);
-
   if (!existedUser) {
     throw new ApiError(404, "user not found");
   }
@@ -39,7 +38,7 @@ const getAllvideos = asyncHandler(async (req, res) => {
     {
       $match: {
         owner: new mongoose.Types.ObjectId(userId),
-        title: { $regex: query, $options: "i" },
+        ...(query ? { title: { $regex: query, $options: "i" } } : {}),
       },
     },
     {
@@ -146,8 +145,8 @@ const publishAVideo = asyncHandler(async (req, res) => {
 const getVideoById = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
 
-  if (!videoId?.trim() || isValidObjectId(videoId)) {
-    throw new ApiError("invalid id format");
+  if (!videoId?.trim() || !isValidObjectId(videoId)) {
+    throw new ApiError(400, "invalid id format");
   }
 
   const video = await Video.findById(videoId);
