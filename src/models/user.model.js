@@ -61,7 +61,7 @@ userSchema.pre("save", async function (next) {
 //password check
 userSchema.methods.isPasswordCorrect = async function (password) {
   return await bcrypt.compare(password, this.password);
-}; 
+};
 
 //genrate REFRESH and ACCESS token
 userSchema.methods.generateAccessToken = function () {

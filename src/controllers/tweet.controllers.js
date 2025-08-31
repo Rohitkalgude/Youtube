@@ -76,7 +76,7 @@ const UpdateTweet = asyncHandler(async (req, res) => {
     throw new ApiError(404, "tweets does not exist");
   }
 
-  if (!tweet.owner.toString() !== req.user._id.toString()) {
+  if (tweet.owner.toString() !== req.user._id.toString()) {
     throw new ApiError(403, "You are not authorized to update this tweet");
   }
 

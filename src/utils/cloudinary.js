@@ -7,21 +7,24 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const uplodedCloudinary = async (localfilepath) => {
+const uplodedCloudinary = async (localfilepath, resourceType = "auto") => {
   try {
     if (!localfilepath) return null;
 
     const response = await cloudinary.uploader.upload(localfilepath, {
-      resource_type: "auto",
+      resource_type: resourceType,
       folder: "Youtube",
-      timeout: 600000,
+      timeout: 120000,
+      use_filename: true,
+      unique_filename: false,
     });
 
-    console.log("upload clodinary", response.url);
+    console.log("uploaded to Cloudinary:", response.secure_url);
     fs.unlinkSync(localfilepath);
     return response;
   } catch (error) {
-    fs.unlinkSync(localfilepath);
+    console.error("Cloudinary upload error:", error);
+    if (fs.existsSync(localfilepath)) fs.unlinkSync(localfilepath);
     return null;
   }
 };

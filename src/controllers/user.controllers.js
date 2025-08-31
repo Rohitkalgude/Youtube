@@ -16,7 +16,7 @@ const generateAccessAndRefereshTokens = async (userId) => {
     const refreshToken = user.generateRefreshToken();
 
     user.refreshToken = refreshToken;
-    await user.save({ validateBeforesave: false });
+    await user.save({ validateBeforeSave: false });
 
     return { refreshToken, accessToken };
   } catch (error) {
@@ -28,10 +28,8 @@ const generateAccessAndRefereshTokens = async (userId) => {
 };
 
 const register = asyncHandler(async (req, res) => {
-  //user details
   const { userName, email, fullName, password } = req.body;
 
-  //validtion user
   if (
     [userName, email, fullName, password].some(
       (field) => !field || field?.trim() === ""
@@ -40,38 +38,35 @@ const register = asyncHandler(async (req, res) => {
     throw new ApiError(400, "All fields are required");
   }
 
-  //check user alReday exists
   const existedUser = await User.findOne({
-    $or: [{ email }, { userName }, { fullName }],
+    $or: [{ email }, { userName }],
   });
 
   if (existedUser) {
-    throw new ApiError(
-      409,
-      "User with email, username, Fullname Alreday exists"
-    );
+    throw new ApiError(409, "User with email, username, Alreday exists");
   }
   console.log(req.files);
 
-  //avatar and coverImage check upload
   const avatarLocalpath = req.files?.avatar?.[0]?.path;
-  const coverImageLocalpath = req.files?.coverImage?.[0]?.path;
+  const coverimageLocalpath = req.files?.coverImage?.[0]?.path;
 
   if (!avatarLocalpath) {
-    throw new ApiError(400, "Avatar files is required");
+    throw new ApiError(400, "Avatar file is required");
   }
 
-  //upload Cloudinary avatar check
   const avatar = await uplodedCloudinary(avatarLocalpath);
-  const coverImage = coverImageLocalpath
-    ? await uplodedCloudinary(coverImageLocalpath)
+  const coverImage = coverimageLocalpath
+    ? await uplodedCloudinary(coverimageLocalpath)
     : null;
+
+  if (coverImage) {
+    console.log("cover uploaded to Cloudinary:", coverImage?.secure_url);
+  }
 
   if (!avatar?.secure_url) {
     throw new ApiError(400, "Avatar upload failed");
   }
 
-  //new user create
   const user = await User.create({
     fullName,
     avatar: avatar.secure_url,
@@ -92,7 +87,7 @@ const register = asyncHandler(async (req, res) => {
 
   return res
     .status(201)
-    .json(new ApiResponse(200, createUser, "User Register SuccessFully"));
+    .json(new ApiResponse(201, createUser, "User Register SuccessFully"));
 });
 
 const loginUser = asyncHandler(async (req, res) => {
@@ -116,7 +111,6 @@ const loginUser = asyncHandler(async (req, res) => {
 
   //password check
   const isPasswordValid = await user.isPasswordCorrect(password);
-
   if (!isPasswordValid) {
     throw new ApiError(401, "Invalid user credentials");
   }
@@ -155,7 +149,7 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 
 const logoutUser = asyncHandler(async (req, res) => {
-  User.findByIdAndUpdate(
+  await User.findByIdAndUpdate(
     req.user._id,
     {
       $set: {
@@ -236,8 +230,8 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid old password");
   }
 
-  user.oldPassword = newPassword;
-  await user.save({ validateBeforesave: false });
+  user.password = newPassword;
+  await user.save();
 
   return res
     .status(200)
@@ -283,12 +277,12 @@ const UpdateUseravatar = asyncHandler(async (req, res) => {
 
   if (user.avatar) {
     const publicId = getPublicIdFromUrl(user.avatar);
-    await deleteFromclodinary(publicId);
+    if (publicId) await deleteFromclodinary(publicId);
   }
 
   const avatar = await uplodedCloudinary(avatarLocalpath);
 
-  if (!avatar.url) {
+  if (!avatar?.secure_url) {
     throw new ApiError(400, "Error while uploading on avatar");
   }
 
@@ -322,12 +316,12 @@ const UpdateUsercoverImage = asyncHandler(async (req, res) => {
 
   if (user.coverImage) {
     const publicId = getPublicIdFromUrl(user.coverImage);
-    await deleteFromclodinary(publicId);
+    if (publicId) await deleteFromclodinary(publicId);
   }
 
   const coverImage = await uplodedCloudinary(coverImageLocalpath);
 
-  if (!coverImage.url) {
+  if (!coverImage?.secure_url) {
     throw new ApiError(400, "Error while uploading on avatar");
   }
 
@@ -438,7 +432,7 @@ const getWatchHistroy = asyncHandler(async (req, res) => {
               pipeline: [
                 {
                   $project: {
-                    fullName: 1,  
+                    fullName: 1,
                     userName: 1,
                     avatar: 1,
                   },

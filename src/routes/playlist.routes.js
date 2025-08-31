@@ -13,17 +13,12 @@ import { verfiyJWT } from "../middlewares/auth.middleware.js";
 const router = Router();
 router.use(verfiyJWT);
 
-router.route("/").post(createPlaylist);
-
-router
-  .route("/:playlistId")
-  .get(getPlaylistById)
-  .patch(updatePlaylist)
-  .delete(deletePlaylist);
-
+router.route("/create").post(createPlaylist);
+router.route("/:playlistId").patch(updatePlaylist);
+router.route("/:playlistId").delete(deletePlaylist);
+router.route("/:playlistId").get(getPlaylistById);
 router.route("/add/:videoId/:playlistId").patch(addVideoToPlaylist);
 router.route("/remove/:videoId/:playlistId").patch(removeVideoFromPlaylist);
-
 router.route("/user/:userId").get(getUserPlaylist);
 
 export default router;

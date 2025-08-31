@@ -232,7 +232,7 @@ const updateVideo = asyncHandler(async (req, res) => {
 const deleteVideo = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
 
-  if (!videoId?.trim() || isValidObjectId(videoId)) {
+  if (!videoId?.trim() || !isValidObjectId(videoId)) {
     throw new ApiError(400, "invalid id format");
   }
 
