@@ -9,9 +9,9 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 const getChannelStats = asyncHandler(async (req, res) => {
   // TODO: Get the channel stats like total video views, total subscribers, total videos, total likes etc.
 
-  const { channelId } = req.body;
+  const { _id: channelId } = req.user;
 
-  if (!channelId?.trim()) {
+  if (!channelId) {
     throw new ApiError(400, "channelId is invalid");
   }
 
@@ -21,11 +21,11 @@ const getChannelStats = asyncHandler(async (req, res) => {
 
   const totalVideos = await Video.countDocuments({ owner: channelId });
   const totalSubscribers = await Subscription.countDocuments({
-    owner: channelId,
+    channel: channelId,
   });
   const videoIds = await Video.find({ owner: channelId }).distinct("_id");
-  const totalLike = 0;
 
+  let totalLike = 0;
   if (videoIds.length) {
     totalLike = await Like.countDocuments({ video: { $in: videoIds } });
   }
@@ -63,7 +63,7 @@ const getChannelStats = asyncHandler(async (req, res) => {
 const getChannelVideos = asyncHandler(async (req, res) => {
   // TODO: Get all the videos uploaded by the channel
 
-  const { channelId } = req.body;
+  const { _id: channelId } = req.user;
 
   if (!channelId) {
     throw new ApiError(400, "ChannelId is required");
