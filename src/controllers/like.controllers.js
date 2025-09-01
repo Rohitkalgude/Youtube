@@ -98,7 +98,7 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
     likeBy: userId,
   });
 
-  if (!existedTweetLike) {
+  if (existedTweetLike) {
     await Like.findByIdAndDelete(existedTweetLike._id);
     return res
       .status(200)

@@ -14,7 +14,7 @@ const uplodedCloudinary = async (localfilepath, resourceType = "auto") => {
     const response = await cloudinary.uploader.upload(localfilepath, {
       resource_type: resourceType,
       folder: "Youtube",
-      timeout: 120000,
+      timeout: 180000,
       use_filename: true,
       unique_filename: false,
     });
@@ -31,8 +31,11 @@ const uplodedCloudinary = async (localfilepath, resourceType = "auto") => {
 
 const deleteFromclodinary = async (publicId, resourceType = "image") => {
   try {
+    console.log("Deleting:", publicId, resourceType);
     await cloudinary.uploader.destroy(publicId, {
       resource_type: resourceType,
+      invalidate: true,
+      timeout: 180000,
     });
   } catch (error) {
     console.error("Error deleting file from Cloudinary:", error);
