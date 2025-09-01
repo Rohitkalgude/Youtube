@@ -1,6 +1,5 @@
 import mongoose, { isValidObjectId } from "mongoose";
 import { PlayList } from "../models/playlist.model.js";
-import { User } from "../models/user.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -49,7 +48,7 @@ const getUserPlaylist = asyncHandler(async (req, res) => {
 
   const palyLists = await PlayList.find({
     owner: userId,
-  }).populate("video");
+  }).populate("videos");
 
   if (!palyLists.length) {
     throw new ApiError(404, "palyLists not found");
@@ -68,15 +67,15 @@ const getPlaylistById = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid id format");
   }
 
-  const palyList = await PlayList.findById(playlistId).populate("videos");
+  const Palylist = await PlayList.findById(playlistId).populate("videos");
 
-  if (!palyList) {
+  if (!Palylist) {
     throw new ApiError(404, "playlist not found");
   }
 
   return res
     .status(200)
-    .json(new ApiResponse(200, palyList, "Playlist fetched successfully"));
+    .json(new ApiResponse(200, Palylist, "Playlist fetched successfully"));
 });
 
 const addVideoToPlaylist = asyncHandler(async (req, res) => {
@@ -91,16 +90,16 @@ const addVideoToPlaylist = asyncHandler(async (req, res) => {
     throw new ApiError(400, "invalid id format");
   }
 
-  const playList = await PlayList.findById(playlistId);
-  if (!playList) {
+  const Playlist = await PlayList.findById(playlistId);
+  if (!Playlist) {
     throw new ApiError(400, "playlistId is missing");
   }
 
-  if (playlistId.owner.toString() !== req.user?._id.toString()) {
+  if (Playlist.owner.toString() !== req.user?._id.toString()) {
     throw new ApiError(400, "You are not authorized to add video");
   }
 
-  const added = await Playlist.findByIdAndUpdate(
+  const added = await PlayList.findByIdAndUpdate(
     playlistId,
     {
       $addToSet: {
@@ -134,16 +133,16 @@ const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
     throw new ApiError(400, "invalid id format");
   }
 
-  const playList = await Playlist.findById(playlistId);
-  if (!playList) {
+  const Playlist = await PlayList.findById(playlistId);
+  if (!Playlist) {
     throw new ApiError(400, "playlistId is missing");
   }
 
-  if (!playlistId.owner.toString() !== req.user?._id.toString()) {
+  if (Playlist.owner.toString() !== req.user?._id.toString()) {
     throw new ApiError(400, "You are not authorized to add video");
   }
 
-  const removed = await Playlist.findByIdAndUpdate(
+  const removed = await PlayList.findByIdAndUpdate(
     playlistId,
     {
       $pull: { videos: VideoId },
@@ -178,11 +177,11 @@ const deletePlaylist = asyncHandler(async (req, res) => {
     throw new ApiError(400, "playlist is missing");
   }
 
-  if (playlistId.owner.toString() !== req.user?._id.toString()) {
+  if (playList.owner.toString() !== req.user?._id.toString()) {
     throw new ApiError(400, "You are not authorized to add video");
   }
 
-  await Playlist.findByIdAndDelete(playlistId);
+  await PlayList.findByIdAndDelete(playlistId);
 
   return res
     .status(200)
@@ -203,17 +202,17 @@ const updatePlaylist = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid id format");
   }
 
-  const palyList = await PlayList.findById(playlistId);
+  const playlist = await PlayList.findById(playlistId);
 
-  if (!palyList) {
+  if (!playlist) {
     throw new ApiError(404, "Playlist is not found");
   }
 
-  if (playlistId.owner.toString() !== req.user?._id.toString()) {
+  if (playlist.owner.toString() !== req.user?._id.toString()) {
     throw new ApiError(400, "You are not authorized to add video");
   }
 
-  const updatePlaylist = await Playlist.findByIdAndUpdate(
+  const updatePlaylist = await PlayList.findByIdAndUpdate(
     playlistId,
     {
       $set: { name, description },

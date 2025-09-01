@@ -56,16 +56,12 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
   const { channelId } = req.params;
   const userId = req.user?._id;
 
-  if (!channelId.trim() || !isValidObjectId(channelId)) {
+  if (!channelId || !isValidObjectId(channelId)) {
     throw new ApiError("invalid channelId format ");
   }
 
   if (!userId) {
     throw new ApiError("user is not exist");
-  }
-
-  if (userId.toString() !== channelId.toString()) {
-    throw new ApiError(403, "Access is denied : not your channel");
   }
 
   const subscribers = await Subscription.aggregate([
@@ -113,10 +109,10 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
 
 // controller to return channel list to which user has subscribed(you how channel subscribe)
 const getSubscribedChannels = asyncHandler(async (req, res) => {
-  const { subscriberId } = req.params;
+  const subscriberId = req.user?._id;
   const userId = req.user?._id;
 
-  if (!subscriberId?.trim() || !isValidObjectId(subscriberId)) {
+  if (!subscriberId || !isValidObjectId(subscriberId)) {
     throw new ApiError(400, "invalid id format");
   }
 
