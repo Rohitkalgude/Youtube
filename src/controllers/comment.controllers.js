@@ -4,6 +4,78 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
+const addComment = asyncHandler(async (req, res) => {
+  //add a Comment to a video
+
+  const { content } = req.body;
+  const { videoId } = req.params;
+
+  if (!videoId?.trim() || !isValidObjectId(videoId)) {
+    throw new ApiError(400, "invalid id fromat");
+  }
+
+  if (!content?.trim()) {
+    throw new ApiError(400, "content is required");
+  }
+
+  const userId = req.user?._id;
+  if (!userId) {
+    throw new ApiError(404, "please login first");
+  }
+
+  const comment = await Comment.create({
+    content,
+    video: videoId,
+    owner: userId,
+  });
+
+  if (!comment) {
+    throw new ApiError(500, "Something went wrong while creating comment");
+  }
+
+  return res
+    .status(201)
+    .json(new ApiResponse(201, comment, "commeent added successfully"));
+});
+
+const UpdateComment = asyncHandler(async (req, res) => {
+  //Update a Comment to a video
+  const { content } = req.body;
+  const { commentId } = req.params;
+
+  if (!content || !commentId) {
+    throw new ApiError(400, "All is required");
+  }
+
+  if (!isValidObjectId(commentId)) {
+    throw new ApiError(400, "invalid id format");
+  }
+
+  const comment = await Comment.findById(commentId);
+
+  if (!comment) {
+    throw new ApiError(404, "comment not found");
+  }
+
+  if (comment.owner.toString() !== req.user?._id.toString()) {
+    throw new ApiError(403, "You are not authorized to update this comment");
+  }
+
+  const updateComment = await Comment.findByIdAndUpdate(
+    commentId,
+    { $set: { content: content } },
+    { new: true }
+  );
+
+  if (!updateComment) {
+    throw new ApiError(500, "failed to upadte");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, updateComment, "comment update successfulliy"));
+});
+
 const getVideoComment = asyncHandler(async (req, res) => {
   //get all Comment for video
   const { videoId } = req.params;
@@ -77,78 +149,6 @@ const getVideoComment = asyncHandler(async (req, res) => {
       "Comments fetched successfully"
     )
   );
-});
-
-const addComment = asyncHandler(async (req, res) => {
-  //add a Comment to a video
-
-  const { content } = req.body;
-  const { videoId } = req.params;
-
-  if (!videoId?.trim() || !isValidObjectId(videoId)) {
-    throw new ApiError(400, "invalid id fromat");
-  }
-
-  if (!content?.trim()) {
-    throw new ApiError(400, "content is required");
-  }
-
-  const userId = req.user?._id;
-  if (!userId) {
-    throw new ApiError(404, "please login first");
-  }
-
-  const comment = await Comment.create({
-    content,
-    video: videoId,
-    owner: userId,
-  });
-
-  if (!comment) {
-    throw new ApiError(500, "Something went wrong while creating comment");
-  }
-
-  return res
-    .status(201)
-    .json(new ApiResponse(201, comment, "commeent added successfully"));
-});
-
-const UpdateComment = asyncHandler(async (req, res) => {
-  //Update a Comment to a video
-  const { content } = req.body;
-  const { commentId } = req.params;
-
-  if (!content || !commentId) {
-    throw new ApiError(400, "All is required");
-  }
-
-  if (!isValidObjectId(commentId)) {
-    throw new ApiError(400, "invalid id format");
-  }
-
-  const comment = await Comment.findById(commentId);
-
-  if (!comment) {
-    throw new ApiError(404, "comment not found");
-  }
-
-  if (comment.owner.toString() !== req.user?._id.toString()) {
-    throw new ApiError(403, "You are not authorized to update this comment");
-  }
-
-  const updateComment = await Comment.findByIdAndUpdate(
-    commentId,
-    { $set: { content: content } },
-    { new: true }
-  );
-
-  if (!updateComment) {
-    throw new ApiError(500, "failed to upadte");
-  }
-
-  return res
-    .status(200)
-    .json(new ApiResponse(200, updateComment, "comment update successfulliy"));
 });
 
 const deleteComment = asyncHandler(async (req, res) => {

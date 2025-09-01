@@ -26,7 +26,7 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
     await Like.findByIdAndDelete(existLikedVideo._id);
     return res
       .status(200)
-      .json(new ApiResponse(), (200, {}, "video Unlike successfully"));
+      .json(new ApiResponse(200, {}, "video Unlike successfully"));
   } else {
     const like = await Like.create({
       video: VideoId,
@@ -61,9 +61,11 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
     likeBy: userId,
   });
 
-  if (!existedCommentLike) {
+  if (existedCommentLike) {
     await Like.findByIdAndDelete(existedCommentLike._id);
-    return res.status(200).json(new ApiResponse(200, "dislike comment"));
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "Comment unliked successfully"));
   } else {
     const comment = await Like.create({
       comment: commentId,
@@ -71,11 +73,11 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
     });
 
     if (!comment) {
-      throw new ApiError(400, "Failed to comment");
+      throw new ApiError(500, "Failed to comment");
     }
     return res
       .status(200)
-      .json(new ApiResponse(200, comment, "dislike comment"));
+      .json(new ApiResponse(200, comment, "Comment liked successfully"));
   }
 });
 
@@ -102,7 +104,7 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
     await Like.findByIdAndDelete(existedTweetLike._id);
     return res
       .status(200)
-      .json(new ApiResponse(), (200, {}, "tweet unlike successfully"));
+      .json(new ApiResponse(200, {}, "tweet unlike successfully"));
   } else {
     const tweet = await Like.create({
       tweet: tweetId,
@@ -110,12 +112,12 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
     });
 
     if (!tweet) {
-      throw new ApiError(400, "failed to like");
+      throw new ApiError(500, "Failed to like tweet");
     }
 
     return res
       .status(200)
-      .json(new ApiResponse(), (200, {}, "tweet like successfully"));
+      .json(new ApiResponse(200, tweet, "tweet like successfully"));
   }
 });
 
