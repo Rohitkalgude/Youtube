@@ -18,7 +18,7 @@ const toggleSubscription = asyncHandler(async (req, res) => {
 
   if (!channelId?.trim() || !isValidObjectId(channelId)) {
     throw new ApiError(400, "invalid channelId format");
-  }
+  } 
 
   if (!userId) {
     throw new ApiError(400, "User not existed");

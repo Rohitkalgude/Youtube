@@ -4,11 +4,11 @@ const SubscriptionSchema = new Schema(
   {
     subscriber: {
       type: Schema.Types.ObjectId,
-      ref: "User", // who subscribes
+      ref: "User", // jo subscribe karta hai
     },
     channel: {
       type: Schema.Types.ObjectId,
-      ref: "User", // who channel
+      ref: "User", // jiska channel hai
     },
   },
   {
@@ -16,5 +16,5 @@ const SubscriptionSchema = new Schema(
   }
 );
 
-// SubscriptionSchema.index({ subscriber: 1, channel: 1 }, { unique: true });
+SubscriptionSchema.index({ subscriber: 1, channel: 1 }, { unique: true });
 export const Subscription = mongoose.model("Subscription", SubscriptionSchema);

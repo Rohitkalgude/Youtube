@@ -7,9 +7,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 const getChannelStats = asyncHandler(async (req, res) => {
-  // TODO: Get the channel stats like total video views, total subscribers, total videos, total likes etc.
-
-  const { _id: channelId } = req.user;
+  let channelId = req.user?._id;
 
   if (!channelId) {
     throw new ApiError(400, "channelId is invalid");
@@ -19,27 +17,30 @@ const getChannelStats = asyncHandler(async (req, res) => {
     throw new ApiError(400, "invalid objectId");
   }
 
+  // total videos
   const totalVideos = await Video.countDocuments({ owner: channelId });
+
+  // total subscribers (count only)
   const totalSubscribers = await Subscription.countDocuments({
     channel: channelId,
   });
+  console.log("subscirber", totalSubscribers);
+
+  // total likes on channel videos
   const videoIds = await Video.find({ owner: channelId }).distinct("_id");
+  const totalLike = videoIds.length
+    ? await Like.countDocuments({ video: { $in: videoIds } })
+    : 0;
 
-  let totalLike = 0;
-  if (videoIds.length) {
-    totalLike = await Like.countDocuments({ video: { $in: videoIds } });
-  }
-
+  // total views
   const viewStatus = await Video.aggregate([
     {
-      $match: {
-        owner: new mongoose.Types.ObjectId(channelId),
-      },
+      $match: { owner: new mongoose.Types.ObjectId(channelId) },
     },
     {
       $group: {
         _id: null,
-        totalViews: { $sum: "$views" },
+        totalViews: { $sum: "$view" },
       },
     },
   ]);
